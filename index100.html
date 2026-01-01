@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>VERDE Barber’s Club — Unified (Carousel + Gallery + Flip Menu)</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Cormorant+Garamond:wght@400;500;700&family=Noto+Sans+JP:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* =============================================================
+   VERDE — Unified Style System
+   - Respect layouts as-is
+   - Unify color/typography/shadows
+   ============================================================= */
+:root{
+  /* —— Unified Palette (Black × Gold × Leather) —— */
+  --leather:#0c0d0f;                   /* global page bg */
+  --panel:#111316;                      /* panels/cards bg */
+  --ink:#e7e3d2;                        /* body text */
+  --ink-weak:#d8d3c0;                   
+  --line:255 255 255;                   /* for hsl() alpha borders */
+  --shadow:0 0 0;                       /* base shadow color */
+
+  /* Gold system (HSL for alpha control) */
+  --gold-1:46 72% 66%; /* highlight */
+  --gold-2:37 64% 46%; /* mid */
+  --gold-3:24 38% 22%; /* deep */
+
+  /* Typographic scale */
+  --h1:clamp(28px, 5.8vw, 48px);
+  --h2:clamp(22px, 3.6vw, 32px);
+  --p:clamp(15px, 1.8vw, 18px);
+
+  /* Rounds & radii */
+  --r-lg:24px; --r-md:18px; --r-sm:12px;
+
+  /* Spacing */
+  --s-1:8px; --s-2:12px; --s-3:18px; --s-4:24px; --s-5:36px; --s-6:56px; --s-7:80px;
+
+  /* Shared shadows */
+  --elev-1:0 10px 22px rgba(var(--shadow)/.45);
+  --elev-2:0 18px 40px rgba(var(--shadow)/.55);
+
+  /* Carousel geometry */
+  --radius:330px;
+  --card-w:clamp(340px,28vw,380px);
+  --card-h:clamp(400px,42vw,410px);
+
+  /* Gallery geometry */
+  --stage-h:58vh; --arc-deg:18deg; --gap:1.25rem;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; color:var(--ink);
+  background:
+    radial-gradient(1200px 800px at 50% -10%, hsl(var(--gold-1)/.08), transparent 55%),
+    radial-gradient(1300px 900px at 50% 120%, hsl(var(--gold-3)/.18), transparent 60%),
+    linear-gradient(180deg,#0000 0,#0003 100%),
+    var(--leather);
+  font-family:"Cormorant Garamond", ui-serif, Georgia, serif;
+  scroll-behavior:smooth;
+}
+main{scroll-snap-type:y mandatory}
+.section{min-height:100svh; display:grid; place-items:center; scroll-snap-align:start; padding-block:120px 80px}
+
+/* —— Global Logo —— */
+.logo{
+  position:fixed; top:52px; left:50%; translate:-50% 0; z-index:30;
+  width:clamp(170px, 36vw, 240px); height:auto; aspect-ratio:1307/556; object-fit:contain;
+  filter:drop-shadow(0 8px 18px rgba(0,0,0,.35)); pointer-events:none;
+}
+
+/* =============================================================
+   Section 1 — 3D Card Carousel (layout preserved)
+   ============================================================= */
+.wrap{display:grid;place-items:center;perspective:2300px;position:relative;width:100%}
+.bg-icon{position:absolute;bottom:1px;left:50%;transform:translateX(-50%);height:57vh;opacity:.40;z-index:0;pointer-events:none;filter:drop-shadow(0 8px 20px rgba(0,0,0,.28))}
+.carousel{position:relative;width:var(--card-w);height:var(--card-h);transform-style:preserve-3d;cursor:grab;margin-top:40px;z-index:1}
+.dragging .carousel{cursor:grabbing}
+.card{
+  position:absolute; inset:0; display:grid; grid-template-rows:auto 1fr auto;
+  width:var(--card-w); height:var(--card-h); padding:22px; border-radius:20px;
+  background:linear-gradient(184deg, var(--panel), #0a0d10 60%, #080a0c 100%);
+  box-shadow:inset 0 0 0 1px hsl(var(--gold-3)/.45), inset 0 0 0 2px #000, 0 14px 32px #000a, 0 0 40px hsl(var(--gold-1)/.16);
+  border:1px solid hsl(var(--gold-3)/.55);
+  transition:filter .25s ease, opacity .20s ease, transform .25s ease;
+}
+.card h3{margin:6px;font-family:"Cinzel",serif;font-weight:700;font-size:38px;color:hsl(var(--gold-1)/.96);letter-spacing:.02em;text-shadow:0 1px 2px rgba(0,0,0,.7)}
+.card p{margin:0;font-size:19px;line-height:1.65;color:var(--ink);text-shadow:0 1px 2px rgba(0,0,0,.6);white-space:pre-line}
+.badge{margin:5px;font:600 15px "Cinzel",serif;padding:7px 7px;border-radius:999px;background:linear-gradient(180deg,hsl(var(--gold-1)/.16),hsl(var(--gold-3)/.12));border:0.5px solid hsl(var(--gold-1)/.4);color:hsl(var(--gold-1)/.9);letter-spacing:.04em}
+.footer{align-self:end;color:#cfcab6;font-size:15px}
+.highlight{font-size:20px;font-weight:600;color:#f6f4ec;text-shadow:0 2px 4px rgba(0,0,0,.8);margin-bottom:12px;line-height:1.6}
+.btn{display:inline-block;margin-top:14px;padding:10px 18px;background:linear-gradient(180deg,hsl(var(--gold-1)/.92),hsl(var(--gold-2)/.72));color:#0e0e0f;font:700 18px/1 "Noto Sans JP",system-ui;text-decoration:none;border-radius:15px;box-shadow:0 8px 18px rgba(0,0,0,.4)}
+.btn:hover{filter:brightness(1.06)}
+.map{margin-top:12px;border-radius:12px;overflow:hidden}
+.map iframe{width:100%;height:180px;border:0}
+.card{filter: blur(calc((1 - max(var(--face,0),0)) * 3.2px)) brightness(calc(.75 + max(var(--face,0)) * .45)) saturate(calc(.9 + max(var(--face,0)) * .25)); opacity: calc(.35 + max(var(--face,0)) * .65); transform: translateZ(0) scale(calc(.92 + max(var(--face,0)) * .08))}
+.next{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);font-family:"Cinzel",serif;font-size:14px;letter-spacing:.06em;opacity:.85}
+.next a{color:hsl(var(--gold-1));text-decoration:none;border-bottom:1px solid hsl(var(--gold-1)/.5);padding-bottom:4px}
+
+/* =============================================================
+   Section 2 — Wide Photo Slider (layout preserved)
+   ============================================================= */
+.stage-wrap{position:relative;width:min(1000px,94vw);padding:clamp(10px,1.8vw,16px);background:linear-gradient(180deg,#0c0e11,#0b0d10);border-radius:var(--r-lg);box-shadow:inset 0 1px 0 hsl(var(--line)/.05), var(--elev-2)}
+.vignette::before,.vignette::after{content:"";position:absolute;inset:0;pointer-events:none}
+.vignette::before{background:radial-gradient(60% 120% at 50% 0%,transparent 50%,#0009 100%), linear-gradient(90deg,#000 0%,transparent 15%,transparent 85%,#000 100%);mix-blend-mode:multiply;border-radius:inherit}
+.vignette::after{box-shadow:inset 0 0 0 1px hsl(var(--gold-1)/.12);border-radius:inherit}
+.stage2{position:relative;height:var(--stage-h);perspective:1600px;overflow:hidden;border-radius:20px}
+.track2{position:absolute;inset:0;display:flex;align-items:center;gap:var(--gap);transform-style:preserve-3d;transform:translateZ(0) rotateX(var(--arc-deg));will-change:transform;padding:0 clamp(40px,6vw,64px)}
+.slide{flex:0 0 auto;height:80%;aspect-ratio:16/9;border-radius:15px;overflow:hidden;position:relative;transform:translateZ(0);cursor:grab;box-shadow:0 8px 24px rgba(0,0,0,.65),0 0 0 1px hsl(var(--line)/.06),0 0 0 1px inset hsl(var(--line)/.06)}
+.slide:active{cursor:grabbing}
+.slide img{width:100%;height:100%;object-fit:cover;object-position:center;display:block;filter:saturate(.94) contrast(1.05) brightness(.94);transform:translateZ(0)}
+.slide::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#000a 0%,transparent 18%,transparent 82%,#000c 100%)}
+.slide.is-center{box-shadow:0 18px 28px rgba(0,0,0,.75),0 0 0 1px hsl(var(--gold-1)/.22),0 0 60px hsl(var(--gold-1)/.18)}
+.slide.is-center img{filter:saturate(1.02) contrast(1.07) brightness(.98)}
+.caption{max-width:min(1000px,92vw);margin:clamp(10px,2.2vw,18px) auto 0;opacity:.78;letter-spacing:.01em;font-size:clamp(14px,1.8vw,17px);text-align:center}
+
+/* =============================================================
+   Section 3 — Luxury Flip Menu (portrait mobile / landscape desktop)
+   (layout preserved; palette unified)
+   ============================================================= */
+.section-menu{min-height:auto;padding-block:180px 220px}
+.book{ width:min(92vw, 520px); height:calc(min(92vw,520px) * 1.45); perspective:2400px; position:relative }
+.stack{ position:absolute; inset:0 }
+.page{ position:absolute; inset:0; transform-origin:left center; overflow:hidden; background:linear-gradient(135deg,#161618 0%, #141416 70%); border:1px solid rgba(255,255,255,.06); border-radius:18px; box-shadow:0 24px 50px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.05) inset; transition:transform 800ms cubic-bezier(.2,.7,.2,1), box-shadow 800ms; display:flex; flex-direction:column; padding:22px }
+.page.turned{ transform:rotateY(-180deg); box-shadow:-10px 10px 40px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.04) inset }
+.gild{ position:absolute; inset:-1px; border-radius:19px; pointer-events:none; padding:1px; background: linear-gradient(180deg, transparent 0 8px, hsl(var(--gold-2)/.22) 8px 9px, transparent 9px 100%), linear-gradient(90deg, hsl(var(--gold-1)/.25), hsl(var(--gold-1)/.05)); -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite:xor; mask-composite:exclude }
+.title{ font-family:"Cinzel", serif; color:hsl(var(--gold-1)); letter-spacing:.02em; font-size:clamp(22px, 6vw, 30px); margin:0 0 10px; padding-bottom:8px; border-bottom:1px solid hsl(var(--gold-1)/.32) }
+.lead{ color:var(--ink-weak); line-height:1.7; font-size:clamp(14px,4vw,16px); margin:0 0 12px; font-family:"Noto Sans JP", system-ui }
+.photo{ display:flex; flex-direction:column; align-items:center; gap:10px; margin:6px 0 14px }
+.frame{ width:100%; aspect-ratio:3/4; border-radius:16px; overflow:hidden; background:#0f0f10; border:1px solid hsl(var(--gold-1)/.22); box-shadow:0 12px 30px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.06) inset }
+.frame img{ width:100%; height:100%; object-fit:cover; display:block; filter:saturate(.98) contrast(1.04) }
+.caption{ font-size:9px; opacity:.72 }
+ul.menu{ list-style:none; padding:0; margin:4px 0 0 }
+.menu li{ display:flex; align-items:baseline; gap:12px; margin:10px 0; font:600 clamp(15px,4.4vw,18px)/1.4 "Noto Sans JP", system-ui }
+.menu .dots{ flex:1; border-bottom:1px dashed hsl(var(--gold-1)/.35); transform:translateY(-2px) }
+.yen{ color:hsl(var(--gold-1)); font-variant-numeric:tabular-nums; font-feature-settings:"palt" 1 }
+.ctrl{ margin-top:16px; display:flex; gap:15px; justify-content:center; align-items:center }
+.btn-ui{ appearance:none; border:none; padding:12px 18px; border-radius:12px; cursor:pointer; font-weight:800; background:linear-gradient(180deg, hsl(var(--gold-1)), hsl(var(--gold-2))); color:#0d0d0e; box-shadow:0 8px 18px rgba(192, 172, 105, 0.28) }
+.btn-ui:disabled{ opacity:.65; box-shadow:none; cursor:not-allowed }
+
+/* Desktop wide: landscape book */
+@media (min-width:1000px){
+  .book{ width:min(90vw, 1120px); height:calc(min(90vw, 1120px) * 0.56) }
+  .page{ padding:48px 34px; display:grid; grid-template-columns:1fr 1fr; gap:18px }
+  .title{ font-size:clamp(28px, 2.6vw, 36px) }
+  .lead{ font-size:clamp(10px, 1.2vw, 18px) }
+  .frame{ aspect-ratio:16/9 }
+  .menu li{ font-size:clamp(16px, 1.25vw, 20px) }
+}
+
+/* —— Captions & links —— */
+.caption-global{max-width:1000px;margin:16px auto 0;text-align:center;opacity:.8;font-size:var(--p)}
+
+/* —— Mobile tunings (borrowed from original, kept) —— */
+@media (max-width:720px){
+  .card h3{font-size:30px}
+  .card p{font-size:18px}
+  .caption{font-size:15px}
+  :root{ --stage-h:48vh; --arc-deg:10deg; --gap:.8rem }
+  .stage-wrap{width:min(760px,96vw);padding:clamp(2px,1.4vw,12px);border-radius:18px}
+  .stage2{ border-radius:16px }
+  .track2{ padding:0 clamp(16px,3.5vw,28px) }
+  .slide{ height:75%; aspect-ratio:4/2.5; border-radius:12px; box-shadow:0 10px 20px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.05) }
+  .slide img{ transform:translateZ(0) scale(.9); filter:saturate(.96) contrast(1.02) brightness(.98) }
+  .slide.is-center{ box-shadow:0 14px 24px rgba(0,0,0,.7),0 0 0 1px hsl(var(--gold-1)/.18) }
+  .slide.is-center img{ transform:translateZ(0) scale(.96) }
+}
+@media (max-width:420px){
+  :root{ --stage-h:44vh }
+  .slide{ height:56%; aspect-ratio:4/3 }
+  .slide img{ transform:translateZ(0) scale(.88) }
+  .slide.is-center img{ transform:translateZ(0) scale(.94) }
+}
+</style>
+</head>
+<body>
+  <img class="logo" src="verde ロゴ.png" alt="VERDE barbers club logo" />
+
+  <main>
+    <!-- =========================================================
+         Section 1: 3D カード・カルーセル
+         ========================================================= -->
+    <section class="section" id="cards">
+      <div class="wrap">
+        <img class="bg-icon" src="verde 背景.png" alt="背景アイコン" />
+        <div class="carousel" id="carousel" aria-label="3D carousel" role="region"></div>
+      </div>
+      <div class="next"><a href="#gallery">Scroll / Swipe ↓</a></div>
+    </section>
+
+    <!-- =========================================================
+         Section 2: 横長フォトスライダー
+         ========================================================= -->
+    <section class="section" id="gallery" aria-label="Image gallery">
+      <div class="stage-wrap vignette">
+        <div class="stage2" id="stage2">
+          <ul class="track2" id="track2">
+            <!-- 差し替え：横長写真が映える。src を実ファイルへ -->
+            <li class="slide"><img src="door.jpg" alt=""></li>
+            <li class="slide"><img src="chare.jpg" alt=""></li>
+            <li class="slide"><img src="soto2.jpg" alt=""></li>
+            <li class="slide"><img src="hsa.jpg" alt=""></li>
+            <li class="slide"><img src="ver.jpg" alt=""></li>
+          </ul>
+        </div>
+      </div>
+      <div class="next" style="position:static; margin-top:12px"><a href="#menu">Go to Menu Book ↓</a></div>
+    </section>
+
+    <!-- =========================================================
+         Section 3: Luxury Flip Menu
+         ========================================================= -->
+    <section class="section section-menu" id="menu" aria-label="Luxury flip menu">
+      <div class="book" id="book">
+        <div class="stack" id="stack">
+          <!-- P1: Cover -->
+          <section class="page">
+            <span class="gild"></span>
+            <h1 class="title" style="font-size:clamp(26px,7vw,44px); text-align:center; margin-top:auto;">VERDE Barber’s Club</h1>
+            <p class="lead" style="text-align:center; margin-bottom:auto;">- Menu Book — </p>
+          </section>
+          <!-- P2: Photo + Intro -->
+          <section class="page">
+            <span class="gild"></span>
+            <div class="photo">
+              <div class="frame"><img src="IMG_206.png" alt="Shop ambience"></div>
+              <div class="caption">Shop ambience</div>
+            </div>
+            <h2 class="title">About VERDE</h2>
+            <p class="lead">黒と金を基調に、上質さと心地よさを両立。視覚と体験の両方で“クリーン”を設計します。</p>
+          </section>
+          <!-- P3: MENU -->
+          <section class="page">
+            <span class="gild"></span>
+            <h2 class="title">MENU</h2>
+            <ul class="menu">
+              <br>
+              <li><span>総合調髪</span><span class="dots"></span><span class="yen">¥5,000</span></li>
+              <br>
+              <li><span>カットシャンプー</span><span class="dots"></span><span class="yen">¥4,500</span></li>
+              <br>
+              <li><span>レディースカットシャンプー</span><span class="dots"></span><span class="yen">¥5,000</span></li>
+              <br>
+              <li><span>白髪ぼかし</span><span class="dots"></span><span class="yen">¥9,000</span></li>
+              <br>
+              <li><span>カラー</span><span class="dots"></span><span class="yen">¥1,000〜</span></li>
+              <br>
+              <li><span>パーマ</span><span class="dots"></span><span class="yen">¥1,000〜</span></li>
+              <br>
+              <li><span>ヘッドスパ</span><span class="dots"></span><span class="yen">¥5,000</span></li>
+              <br>
+              <li><span>シェービング</span><span class="dots"></span><span class="yen">¥4,000</span></li>
+              <br>
+              <li><span>レディースシェービング</span><span class="dots"></span><span class="yen">¥5,000</span></li>
+            </ul>
+          </section>
+          <!-- P4: Tools -->
+          <section class="page">
+            <span class="gild"></span>
+            <div class="photo">
+              <div class="frame"><img src="IMG_2060 2.jpg" alt="Tools"></div>
+              <div class="caption">Selected tools</div>
+            </div>
+            <h2 class="title">Craft & Care</h2>
+            <p class="lead">道具の整備、刃の管理、仕上げの一筆。細部の精度が印象の“清潔さ”を決めます。</p>
+          </section>
+          <!-- P5: Full photo -->
+          <section class="page">
+            <span class="gild"></span>
+            <div class="photo" style="margin-top:auto; margin-bottom:auto;">
+              <div class="frame" style="aspect-ratio:9/16"><img src="IMG_2796.jpg" alt="Service moment"></div>
+            </div>
+          </section>
+        </div>
+      </div>
+      <div class="ctrl">
+        <button class="btn-ui" id="prev">Prev</button>
+        <button class="btn-ui" id="next">Next</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- =========================================================
+       Scripts — split by section, IDs kept unique to avoid collisions
+       ========================================================= -->
+  <script>
+  /* ========= Section 1: 3D カード ========= */
+  const items=[
+    {title:'ご案内', text:'<div class="highlight">営業時間：9:30〜19:00<br>定休日：月曜日</div>'+ '<div class="highlight">TEL：<a href="tel:0334328625" style="color:#f5f5f0;text-decoration:none;">03-3432-8625</a></div>', tag:'Info', button:{label:'予約ページへ', url:'https://example.com/reserve-shinbashi'}},
+    {title:'MENU', text:'・総合調髪 ¥5000\n・カットシャンプー ¥4500\n・レディースカットシャンプー ¥5000\n・白髪ぼかし ¥9000\n・カラー ¥1000〜\n・パーマ ¥1000〜\n・レディースシェービング ¥5000', tag:'Service'},
+    {title:'ACCESS', text:'〒105-0003\n東京都港区西新橋3-19-14\n東京健鋼ビルB1\n', tag:'Map', map:true},
+    {title:'別店舗', text:'VERDE Barber’s Club 市川店のWeb予約はこちら', tag:'Other', button:{label:'市川店予約', url:'https://example.com/reserve-other'}},
+  ];
+  const root = document.getElementById('carousel');
+  const n = items.length, theta = 360 / n; const radius = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--radius'));
+  items.forEach(({title,text,tag,map,button}, i) => {
+    const card = document.createElement('article'); card.className = 'card'; card.dataset.base = (theta * i);
+    const mapEmbed = map ? `<div class="map"><iframe src="https://www.google.com/maps?q=${encodeURIComponent('東京都港区西新橋3-19-14 東京健鋼ビルB1')}&output=embed" allowfullscreen loading="lazy"></iframe></div>` : '';
+    const btn = button ? `<a href="${button.url}" class="btn" target="_blank" rel="noopener">${button.label}</a>` : '';
+    card.innerHTML = `<div class="badge">${tag}</div><div><h3>${title}</h3><p>${text}</p>${mapEmbed}${btn}</div><div class="footer">#${String(i+1).padStart(2,'0')} / ${String(n).padStart(2,'0')}</div>`;
+    card.style.transform = `rotateY(${theta * i}deg) translateZ(${radius}px)`; root.appendChild(card);
+  });
+  const clampV = (v,min,max)=>Math.max(min,Math.min(max,v));
+  const normDeg = d => ((d % 360) + 360) % 360;
+  let rotY = 0, targetRotY = 0, vel = 0, auto = true; let z = -300; let last = performance.now();
+  function updateFace(){ [...root.children].forEach(el=>{ const base = Number(el.dataset.base)||0; const rel = normDeg(base + rotY); const diff = Math.min(Math.abs(rel), 360 - Math.abs(rel)); const face = Math.cos(diff * Math.PI / 180); el.style.setProperty('--face', Math.max(0, face)); el.style.zIndex = String(1000 + Math.round(face * 100)); }); }
+  function tick(t){ const dt = Math.min(32, t - last); last = t; if(auto){ targetRotY += 0.03; } rotY += (targetRotY - rotY) * 0.06; root.style.transform = `translateZ(${z}px) rotateY(${rotY}deg)`; updateFace(); requestAnimationFrame(tick); }
+  requestAnimationFrame(tick);
+  let dragging=false, startX=0, startTarget=0;
+  function onDown(e){ dragging=true; auto=false; vel=0; startX=(e.touches?e.touches[0].clientX:e.clientX); startTarget=targetRotY; document.body.classList.add('dragging'); }
+  function onMove(e){ if(!dragging) return; const x=(e.touches?e.touches[0].clientX:e.clientX); const dx=(x-startX); targetRotY=startTarget+dx*0.5; vel=dx; }
+  function onUp(){ if(!dragging) return; dragging=false; document.body.classList.remove('dragging'); let inertia=clampV(vel*0.3,-180,180); const id=setInterval(()=>{ inertia*=0.90; targetRotY+=inertia*0.06; if(Math.abs(inertia)<0.1){ clearInterval(id); auto=true; } },16); }
+  root.addEventListener('mousedown',onDown); window.addEventListener('mousemove',onMove); window.addEventListener('mouseup',onUp); root.addEventListener('touchstart',onDown,{passive:true}); window.addEventListener('touchmove',onMove,{passive:true}); window.addEventListener('touchend',onUp);
+  root.addEventListener('wheel',e=>{ if (!e.shiftKey && Math.abs(e.deltaX) < 2) { return; } e.preventDefault(); z += e.deltaY*0.7; z=clampV(z,-900,-140); root.style.transform=`translateZ(${z}px) rotateY(${rotY}deg)`; },{passive:false});
+  const mq=matchMedia('(prefers-reduced-motion: reduce)'); if(mq.matches) auto=false; mq.addEventListener?.('change', e => { auto=!e.matches; });
+  </script>
+
+  <script src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>
+  <script src="https://unpkg.com/gsap@3/dist/Draggable.min.js"></script>
+  <script>
+  /* ========= Section 2: 横長フォトスライダー ========= */
+  (() => {
+    const stage = document.getElementById('stage2');
+    const track = document.getElementById('track2');
+    const slides = Array.from(document.querySelectorAll('#track2 .slide'));
+    const gap = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--gap')) || 16;
+    let x = 0, vw = track.clientWidth, tw = 0;
+    function totalWidth(){ return slides.reduce((w,el)=> w + el.getBoundingClientRect().width + gap, -gap); }
+    function markCenter(){ const s = stage.getBoundingClientRect(); let min = Infinity, centerEl = null; slides.forEach(el=>{ const r = el.getBoundingClientRect(); const dist = Math.abs((s.left + s.width/2) - (r.left + r.width/2)); if(dist < min){ min = dist; centerEl = el; } }); slides.forEach(el=> el.classList.toggle('is-center', el === centerEl)); slides.forEach(el=>{ gsap.to(el, { scale: el.classList.contains('is-center') ? 1.06 : 1, z: el.classList.contains('is-center') ? 60 : 0, duration:.5, ease:'power3.out' }); }); }
+    function clamp(min, v, max){ return Math.max(min, Math.min(max, v)); }
+    function alignTo(nx, animate=true){ x = clamp(-(tw - vw), nx, 0); gsap.to(track, { x, duration: animate ? .55 : 0, ease: 'power3.out', onUpdate:markCenter }); }
+    function snapToNearest(){ const s = stage.getBoundingClientRect(); let bestDelta = 0, min = Infinity; slides.forEach(el=>{ const r = el.getBoundingClientRect(); const delta = (s.left + s.width/2) - (r.left + r.width/2); const dist = Math.abs(delta); if(dist < min){ min = dist; bestDelta = delta; } }); alignTo(x + bestDelta); }
+    function layout(){ vw = track.clientWidth; tw = totalWidth(); alignTo(x, false); markCenter(); }
+    window.addEventListener('resize', layout, {passive:true});
+    Draggable.create(track, { type:'x', onDrag(){ alignTo(this.x, false); }, onRelease(){ snapToNearest(); } });
+    let wheelTimer; document.addEventListener('wheel', e=>{ if(!e.deltaX && Math.abs(e.deltaY) < 2) return; alignTo(x - (e.deltaX || e.deltaY)*0.6); clearTimeout(wheelTimer); wheelTimer = setTimeout(snapToNearest, 80); }, { passive:true });
+    layout();
+  })();
+  </script>
+
+  <script>
+  // ========= Section 3: Flip Menu =========
+  const stack = document.getElementById('stack');
+  const pages = Array.from(stack.children);
+  pages.forEach((p,i)=> p.style.zIndex = String(pages.length - i));
+  let index = 0; const clampI = (v,min,max)=>Math.min(Math.max(v,min),max);
+  function go(to){ const next = clampI(to, 0, pages.length - 1); if(next === index) return; if(next > index){ pages[index].classList.add('turned'); index = next; } else { pages[next].classList.remove('turned'); index = next; } updateButtons(); }
+  function updateButtons(){ prev.disabled = index === 0; next.disabled = index === pages.length - 1; }
+  const prev = document.getElementById('prev'); const next = document.getElementById('next');
+  prev.onclick = ()=> go(index - 1); next.onclick = ()=> go(index + 1); updateButtons();
+  stack.addEventListener('click', e=>{ const r = stack.getBoundingClientRect(); const x = (e.clientX || (e.touches?.[0]?.clientX ?? 0)) - r.left; if(x < r.width/2) go(index - 1); else go(index + 1); });
+  let sx = null; stack.addEventListener('touchstart', e=>{ sx = e.touches[0].clientX; }, {passive:true}); stack.addEventListener('touchend', e=>{ if(sx == null) return; const dx = (e.changedTouches[0].clientX - sx); if(Math.abs(dx) > 40) { dx < 0 ? go(index + 1) : go(index - 1); } sx = null; }, {passive:true});
+  addEventListener('keydown', e=>{ if(e.key === 'ArrowLeft') go(index - 1); if(e.key === 'ArrowRight') go(index + 1); });
+  </script>
+</body>
+</html>
