@@ -176,13 +176,24 @@ ul.menu{ list-style:none; padding:0; margin:4px 0 0 }
   .slide img{ transform:translateZ(0) scale(.9); filter:saturate(.96) contrast(1.02) brightness(.98) }
   .slide.is-center{ box-shadow:0 14px 24px rgba(0,0,0,.7),0 0 0 1px hsl(var(--gold-1)/.18) }
   .slide.is-center img{ transform:translateZ(0) scale(.96) }
+  .menu li{
+    flex-wrap:wrap;
+    row-gap:6px;
+  }
+  .menu .dots{
+    min-width:40%;
+    flex-basis:100%; /* 折り返して点線を下へ */
+  }
+  .yen{
+    margin-left:auto;
+  }
 }
 @media (max-width:420px){
   :root{ --stage-h:56vh }
   .slide{ height:78%; aspect-ratio:4/3 }
   .slide img{ transform:translateZ(0) scale(.88) }
   .slide.is-center img{ transform:translateZ(0) scale(.94) }
-   .menu li{
+  .menu li{
     flex-wrap:wrap;
     row-gap:6px;
   }
@@ -276,8 +287,7 @@ ul.menu{ list-style:none; padding:0; margin:4px 0 0 }
               <div class="frame"><img src="IMG_2060 2.jpg" alt="Tools"></div>
               <div class="caption">Selected tools</div>
             </div>
-            <h2 class="title">Craft & Care</h2>
-            <p class="lead">道具の整備、刃の管理、仕上げの一筆。細部の精度が印象の“清潔さ”を決めます。</p>
+            
           </section>
           <!-- P5: Full photo -->
           <section class="page">
