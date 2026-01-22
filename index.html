@@ -190,20 +190,27 @@ ul.menu{ list-style:none; padding:0; margin:4px 0 0 }
 }
 @media (max-width:420px){
   :root{ --stage-h:56vh }
-  .slide{ height:68%; aspect-ratio:16/9 }
-  .slide img{ transform:translateZ(0) scale(.88) }
-  .slide.is-center img{ transform:translateZ(0) scale(.94) }
-  .menu li{
-    flex-wrap:wrap;
-    row-gap:2px;
+
+  .slide{
+    height:68%;
+    aspect-ratio:16/9;
+    display:grid;
+    place-items:center;
   }
-  .menu .dots{
-    min-width:40%;
-    flex-basis:100%; /* 折り返して点線を下へ */
+
+  .slide img{
+    width:88%;
+    height:88%;
+    object-fit:contain;
+    transform:none;
   }
-  .yen{
-    margin-left:auto;
+
+  .slide.is-center img{
+    width:92%;
+    height:92%;
   }
+}
+
 }
 </style>
 </head>
