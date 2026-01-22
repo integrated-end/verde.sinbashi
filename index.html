@@ -189,29 +189,61 @@ ul.menu{ list-style:none; padding:0; margin:4px 0 0 }
   }
 }
 @media (max-width:420px){
-  :root{ --stage-h:56vh }
+  :root{ --stage-h:52vh }          /* まだ大きい→少し低く */
 
   .slide{
-    height:68%;
+    height:56%;                    /* ←枠ごと小さく（操作性も上がる） */
     aspect-ratio:16/9;
-    display:grid;
-    place-items:center;
+    padding:16px;                  /* ←写真をさらに小さく */
   }
 
-  .slide img{
-    width:88%;
-    height:88%;
-    object-fit:contain;
-    transform:none;
-  }
-
-  .slide.is-center img{
-    width:92%;
-    height:92%;
+  .slide.is-center{
+    height:60%;
+    padding:12px;                  /* センターは少しだけ大きめ */
   }
 }
 
+
 }
+
+/* ===== Fix: slideしにくい + 写真小さく（全サイズ共通）===== */
+
+/* ドラッグの邪魔をしない */
+#track2, #track2 *{
+  -webkit-user-select:none;
+  user-select:none;
+  -webkit-user-drag:none;
+}
+
+/* 画像がタッチ/マウスを奪うのを止める（最重要） */
+#track2 .slide img{
+  pointer-events:none;
+}
+
+/* 横スライドは許可しつつ、縦スクロールも殺さない */
+#stage2{
+  touch-action: pan-y;
+}
+
+/* 枠はそのまま、写真だけ小さく＋額縁感 */
+#track2 .slide{
+  display:grid;
+  place-items:center;
+  padding:14px;           /* ←写真を小さく見せる“余白” */
+}
+
+#track2 .slide img{
+  width:100%;
+  height:100%;
+  object-fit:contain;     /* ←見切れなしで小さく */
+  transform:none;         /* ←scale方式をやめて安定させる */
+}
+
+/* センターだけ少し大きく */
+#track2 .slide.is-center{
+  padding:10px;
+}
+
 </style>
 </head>
 <body>
