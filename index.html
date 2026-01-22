@@ -399,6 +399,31 @@ ul.menu{ list-style:none; padding:0; margin:4px 0 0 }
     Draggable.create(track, { type:'x', onDrag(){ alignTo(this.x, false); }, onRelease(){ snapToNearest(); } });
     let wheelTimer; document.addEventListener('wheel', e=>{ if(!e.deltaX && Math.abs(e.deltaY) < 2) return; alignTo(x - (e.deltaX || e.deltaY)*0.6); clearTimeout(wheelTimer); wheelTimer = setTimeout(snapToNearest, 80); }, { passive:true });
     layout();
+        // ===== Auto play（自動で流し続ける）=====
+    let autoplay = true;
+    let rafId = null;
+    const SPEED = 0.6; // 速さ（大きいほど速い）
+
+    function loop(){
+      if(autoplay){
+        alignTo(x - SPEED, false);
+
+        // 端まで行ったら先頭へ（ループ）
+        if (x <= -(tw - vw) + 1) {
+          alignTo(0, false);
+        }
+      }
+      rafId = requestAnimationFrame(loop);
+    }
+    loop();
+
+    // 触ってる間は止める（操作優先）
+    stage.addEventListener('pointerdown', () => { autoplay = false; }, {passive:true});
+    window.addEventListener('pointerup', () => {
+      autoplay = true;
+      snapToNearest(); // 手を離したらセンターに吸着
+    }, {passive:true});
+ 
   })();
   </script>
 
