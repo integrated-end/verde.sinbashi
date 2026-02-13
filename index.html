@@ -252,7 +252,10 @@ ul.menu{ list-style:none; padding:0; margin:4px 0 0 }
 #track2 .slide.is-center{
   padding:10px;
 }
-
+/* ===== Section2を完全に触れなくする（自動再生だけ）===== */
+#stage2, #track2, #track2 *{
+  pointer-events:none !important;
+}
 </style>
 </head>
 <body>
@@ -387,51 +390,60 @@ ul.menu{ list-style:none; padding:0; margin:4px 0 0 }
   <script src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>
   <script src="https://unpkg.com/gsap@3/dist/Draggable.min.js"></script>
   <script>
-  /* ========= Section 2: 横長フォトスライダー ========= */
-  (() => {
-    const stage = document.getElementById('stage2');
-    const track = document.getElementById('track2');
-    const slides = Array.from(document.querySelectorAll('#track2 .slide'));
-    const gap = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--gap')) || 16;
-    let x = 0, vw = track.clientWidth, tw = 0;
-    function totalWidth(){ return slides.reduce((w,el)=> w + el.getBoundingClientRect().width + gap, -gap); }
-    function markCenter(){ const s = stage.getBoundingClientRect(); let min = Infinity, centerEl = null; slides.forEach(el=>{ const r = el.getBoundingClientRect(); const dist = Math.abs((s.left + s.width/2) - (r.left + r.width/2)); if(dist < min){ min = dist; centerEl = el; } }); slides.forEach(el=> el.classList.toggle('is-center', el === centerEl)); slides.forEach(el=>{ gsap.to(el, { scale: el.classList.contains('is-center') ? 1.06 : 1, z: el.classList.contains('is-center') ? 60 : 0, duration:.5, ease:'power3.out' }); }); }
-    function clamp(min, v, max){ return Math.max(min, Math.min(max, v)); }
-    function alignTo(nx, animate=true){ x = clamp(-(tw - vw), nx, 0); gsap.to(track, { x, duration: animate ? .55 : 0, ease: 'power3.out', onUpdate:markCenter }); }
-    function snapToNearest(){ const s = stage.getBoundingClientRect(); let bestDelta = 0, min = Infinity; slides.forEach(el=>{ const r = el.getBoundingClientRect(); const delta = (s.left + s.width/2) - (r.left + r.width/2); const dist = Math.abs(delta); if(dist < min){ min = dist; bestDelta = delta; } }); alignTo(x + bestDelta); }
-    function layout(){ vw = track.clientWidth; tw = totalWidth(); alignTo(x, false); markCenter(); }
-    window.addEventListener('resize', layout, {passive:true});
-    Draggable.create(track, { type:'x', onDrag(){ alignTo(this.x, false); }, onRelease(){ snapToNearest(); } });
-    let wheelTimer; document.addEventListener('wheel', e=>{ if(!e.deltaX && Math.abs(e.deltaY) < 2) return; alignTo(x - (e.deltaX || e.deltaY)*0.6); clearTimeout(wheelTimer); wheelTimer = setTimeout(snapToNearest, 80); }, { passive:true });
-    layout();
-        // ===== Auto play（自動で流し続ける）=====
-    let autoplay = true;
-    let rafId = null;
-    const SPEED = 1.0; // 速さ（大きいほど速い）
+/* ========= Section 2: 横長フォトスライダー（AUTO ONLY） ========= */
+(() => {
+  const stage = document.getElementById('stage2');
+  const track = document.getElementById('track2');
+  const slides = Array.from(document.querySelectorAll('#track2 .slide'));
+  const gap = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--gap')) || 16;
 
-    function loop(){
-      if(autoplay){
-        alignTo(x - SPEED, false);
+  let x = 0, vw = track.clientWidth, tw = 0;
 
-        // 端まで行ったら先頭へ（ループ）
-        if (x <= -(tw - vw) + 1) {
-          alignTo(0, false);
-        }
-      }
-      rafId = requestAnimationFrame(loop);
-    }
-    loop();
+  function totalWidth(){
+    return slides.reduce((w, el) => w + el.getBoundingClientRect().width + gap, -gap);
+  }
+  function clamp(min, v, max){ return Math.max(min, Math.min(max, v)); }
 
-    // 触ってる間は止める（操作優先）
-    stage.addEventListener('pointerdown', () => { autoplay = false; }, {passive:true});
-    window.addEventListener('pointerup', () => {
-      autoplay = true;
-      snapToNearest(); // 手を離したらセンターに吸着
-    }, {passive:true});
- 
-  })();
-  </script>
+  function markCenter(){
+    const s = stage.getBoundingClientRect();
+    let min = Infinity, centerEl = null;
 
+    slides.forEach(el=>{
+      const r = el.getBoundingClientRect();
+      const dist = Math.abs((s.left + s.width/2) - (r.left + r.width/2));
+      if(dist < min){ min = dist; centerEl = el; }
+    });
+
+    slides.forEach(el => el.classList.toggle('is-center', el === centerEl));
+  }
+
+  function alignTo(nx){
+    x = clamp(-(tw - vw), nx, 0);
+    gsap.set(track, { x });        // ← autoのみなので set でOK（軽い）
+    markCenter();
+  }
+
+  function layout(){
+    vw = track.clientWidth;
+    tw = totalWidth();
+    alignTo(x);
+  }
+  window.addEventListener('resize', layout, {passive:true});
+  layout();
+
+  // ===== Auto play only =====
+  const SPEED = 1.0; // 速さ
+  function loop(){
+    alignTo(x - SPEED);
+
+    // 端まで行ったら先頭へ（ループ）
+    if (x <= -(tw - vw) + 1) alignTo(0);
+
+    requestAnimationFrame(loop);
+  }
+  loop();
+})();
+</script>
   <script>
   // ========= Section 3: Flip Menu =========
   const stack = document.getElementById('stack');
