@@ -102,6 +102,15 @@ main{scroll-snap-type:y mandatory}
 /* =============================================================
    Section 2 — Wide Photo Slider (layout preserved)
    ============================================================= */
+
+/* ===== 画像を触れなくする（全体） ===== */
+img{
+  pointer-events:none;          /* クリック/ドラッグ/タップを奪わない */
+  -webkit-user-drag:none;       /* Chrome/Safariの画像ドラッグ禁止 */
+  user-select:none;             /* 選択禁止 */
+  -webkit-user-select:none;
+  -webkit-touch-callout:none;   /* iOS長押しメニュー抑制 */
+}
 .stage-wrap{position:relative;width:min(1000px,94vw);padding:clamp(10px,1.8vw,16px);background:linear-gradient(180deg,#0c0e11,#0b0d10);border-radius:var(--r-lg);box-shadow:inset 0 1px 0 hsl(var(--line)/.05), var(--elev-2)}
 .vignette::before,.vignette::after{content:"";position:absolute;inset:0;pointer-events:none}
 .vignette::before{background:radial-gradient(60% 120% at 50% 0%,transparent 50%,#0009 100%), linear-gradient(90deg,#000 0%,transparent 15%,transparent 85%,#000 100%);mix-blend-mode:multiply;border-radius:inherit}
